@@ -79,8 +79,8 @@ docker run -d \
 ```
 
 You can choose between two different image providers:
-- Docker Hub: [casudo1/smex]()
-- GitHub: [ghcr.io/casudo/smex]()
+- Docker Hub: [casudo1/smex](https://hub.docker.com/r/casudo1/smex)
+- GitHub: [ghcr.io/casudo/smex](https://github.com/casudo/Shelly-Metric-Exporter/pkgs/container/smex)
 
 ## Docker Compose
 ```yaml
