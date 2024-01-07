@@ -4,11 +4,11 @@ from os import getenv
 ### ===============================================================================
 
 ### Get the environment variables
-D1_SHELLY_DEVICETYPE = getenv("D1_SHELLY_DEVICETYPE")
-D1_SHELLY_HOST = getenv("D1_SHELLY_HOST")
-D1_SHELLY_PORT = getenv("D1_SHELLY_PORT")
-D1_SHELLY_USERNAME = getenv("D1_SHELLY_USERNAME", None)
-D1_SHELLY_PASSWORD = getenv("D1_SHELLY_PASSWORD", None)
+D1_DEVICETYPE = getenv("D1_DEVICETYPE")
+D1_HOST = getenv("D1_HOST")
+D1_PORT = getenv("D1_PORT", 80)
+D1_USERNAME = getenv("D1_USERNAME", None)
+D1_PASSWORD = getenv("D1_PASSWORD", None)
 
 DISCORD_WEBHOOK = getenv("DISCORD_WEBHOOK")
 EXPORTER_PORT = getenv("EXPORTER_PORT", 5000)
@@ -19,18 +19,23 @@ print("⏳ Checking environment variables...")
 
 ### Check if the environment variables are set
 ### Required one device
-if D1_SHELLY_DEVICETYPE is None or D1_SHELLY_HOST is None or D1_SHELLY_PORT is None: 
+if D1_DEVICETYPE is None or D1_HOST is None: 
     print("  ❌ D1 information are not fully set. Exiting...")
     exit()
 else:
     print("  ✅ D1 information are set.")
+### Check for optional D1 device port
+if D1_PORT == 80:
+    print("  ✅ Using default port 80.")
+else:
+    print(f"  ✅ Using custom port {D1_PORT}.")
 ### Check for optional D1 device username and password
-if D1_SHELLY_USERNAME is not None and D1_SHELLY_PASSWORD is not None:
+if D1_USERNAME is not None and D1_PASSWORD is not None:
     print("  ✅ D1 credentials are set.")
-elif D1_SHELLY_USERNAME is not None and D1_SHELLY_PASSWORD is None:
+elif D1_USERNAME is not None and D1_PASSWORD is None:
     print("  ❌ D1 username is set but password is missing. Exiting...")
     exit()
-elif D1_SHELLY_USERNAME is None and D1_SHELLY_PASSWORD is not None:
+elif D1_USERNAME is None and D1_PASSWORD is not None:
     print("  ❌ D1 password is set but username is missing. Exiting...")
     exit()
 else:
@@ -45,29 +50,33 @@ else:
 
 ### Exporter Port
 if EXPORTER_PORT == 5000:
-    print("  ✅ Using default value exporter port 5000.")
+    print("  ✅ Using default exporter port 5000.")
 ### TODO: Add port check
 else:
-    print("  ✅ Using custom value exporter port " + str(EXPORTER_PORT) + ".")
+    print(f"  ✅ Using custom exporter port {EXPORTER_PORT}.")
 
 ### Check for additional optional devices starting from D2 and beyond
 device_number = 2
 while True:
-    devicetype = getenv(f"D{device_number}_SHELLY_DEVICETYPE")
-    host = getenv(f"D{device_number}_SHELLY_HOST")
-    port = getenv(f"D{device_number}_SHELLY_PORT")
-    username = getenv(f"D{device_number}_SHELLY_USERNAME", None)
-    password = getenv(f"D{device_number}_SHELLY_PASSWORD", None)
+    devicetype = getenv(f"D{device_number}_DEVICETYPE")
+    host = getenv(f"D{device_number}_HOST")
+    port = getenv(f"D{device_number}_PORT", 80)
+    username = getenv(f"D{device_number}_USERNAME", None)
+    password = getenv(f"D{device_number}_PASSWORD", None)
 
     ### TODO: Add check for device type (plugs, 3em, etc.)
-    if devicetype is None and host is None and port is None:
+    if devicetype is None and host is None:
         break
-    elif devicetype is None or host is None or port is None:
+    elif devicetype is None or host is None:
         print(f"  ❌ D{device_number} information are not fully set. Exiting...")
         exit()
     else:
         print(f"  ✅ D{device_number} information are set.")
-
+    ### Check for optional D{n} device port
+    if port == 80:
+        print(f"  ✅ Using default port 80.")
+    else:
+        print(f"  ✅ Using custom port {port}.")
     ### Check for optional D{n} device username and password
     if username is not None and password is not None:
         print(f"  ✅ D{device_number} credentials are set.")
