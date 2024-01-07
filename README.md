@@ -6,6 +6,9 @@
 
   <!-- Placeholder for badges -->
   ![GitHub License](https://img.shields.io/github/license/casudo/Shelly-Metric-Exporter) ![GitHub release (with filter)](https://img.shields.io/github/v/release/casudo/Shelly-Metric-Exporter)
+  ![Docker Pulls](https://img.shields.io/docker/pulls/casudo1/smex) ![Docker Stars](https://img.shields.io/docker/stars/casudo1/smex) ![Docker Image Size (tag)](https://img.shields.io/docker/image-size/casudo1/smex/latest)
+
+
 </div>
 
 > Note: This is a hobby project and still in development. It is not recommended to use it in production environments yet. Feel free to create issues and contribute.
