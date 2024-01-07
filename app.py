@@ -41,9 +41,9 @@ def create_metrics(device_type, device_ip):
     ### Create metrics according to the device type
     if device_type == "plugs":
         return {
-            "temperature": Gauge(f"plugs_temperature_{metric_name_ip}", "Temperature from Shelly plugs"),
-            "uptime": Gauge(f"plugs_uptime_{metric_name_ip}", "Uptime from Shelly plugs"),
-            "power": Gauge(f"plugs_power_consumption_{metric_name_ip}", "Shelly power consumption from Shelly plugs")
+            "temperature": Gauge(f"shellyplugs_temperature_{metric_name_ip}", "Temperature from Shelly plugs"),
+            "uptime": Gauge(f"shellyplugs_uptime_{metric_name_ip}", "Uptime from Shelly plugs"),
+            "power": Gauge(f"shellyplugs_power_consumption_{metric_name_ip}", "Shelly power consumption from Shelly plugs")
         }
     elif device_type == "1":
         return {
