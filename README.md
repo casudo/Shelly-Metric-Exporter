@@ -45,6 +45,7 @@ If you want to run this in a Docker container, you'll first need to set some man
 
 **Optional:**
 | Variable |  Description |
+| --- | --- |
 | `EXPORTER_PORT` | The port the exporter should listen on. If not set, defaults to `5000`. |
 | `D1_PORT` | Port of the Shelly device. If not set, defaults to `80`. |
 | `D1_USERNAME` | Username of the Shelly device if authentication is enabled. |
