@@ -26,9 +26,9 @@ else:
     print("  ✅ D1 information are set.")
 ### Check for optional D1 device port
 if D1_PORT == 80:
-    print("  ✅ Using default port 80.")
+    print("  ✅ D1 using default port 80.")
 else:
-    print(f"  ✅ Using custom port {D1_PORT}.")
+    print(f"  ✅ D1 using custom port {D1_PORT}.")
 ### Check for optional D1 device username and password
 if D1_USERNAME is not None and D1_PASSWORD is not None:
     print("  ✅ D1 credentials are set.")
@@ -74,9 +74,9 @@ while True:
         print(f"  ✅ D{device_number} information are set.")
     ### Check for optional D{n} device port
     if port == 80:
-        print(f"  ✅ Using default port 80.")
+        print(f"  ✅ D{device_number} using default port 80.")
     else:
-        print(f"  ✅ Using custom port {port}.")
+        print(f"  ✅ D{device_number} using custom port {port}.")
     ### Check for optional D{n} device username and password
     if username is not None and password is not None:
         print(f"  ✅ D{device_number} credentials are set.")

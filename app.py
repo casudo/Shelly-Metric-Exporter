@@ -25,7 +25,7 @@ while True:
     shelly_devices.append({
         "devicetype": getenv(f"D{device_number}_DEVICETYPE"),
         "host": host,
-        "port": getenv(f"D{device_number}_PORT"),
+        "port": getenv(f"D{device_number}_PORT", 80),
         "username": getenv(f"D{device_number}_USERNAME", None), # Optional
         "password": getenv(f"D{device_number}_PASSWORD", None) # Optional
     })
