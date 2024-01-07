@@ -2,13 +2,11 @@ import requests
 import prometheus_client as prom
 
 from flask import Flask
-from flask_cors import CORS
 from prometheus_client import Gauge, generate_latest, REGISTRY
 from requests.auth import HTTPBasicAuth
 from os import getenv
 
 app = Flask(__name__)
-CORS(app)
 
 ### Remove default collectors
 prom.REGISTRY.unregister(prom.PROCESS_COLLECTOR)
@@ -19,20 +17,20 @@ prom.REGISTRY.unregister(prom.GC_COLLECTOR)
 shelly_devices = []
 device_number = 1
 while True:
-    host = getenv(f"D{device_number}_SHELLY_HOST")
+    host = getenv(f"D{device_number}_HOST")
     ### Exit if no more devices (host) are found
     if host is None:
         break
 
     shelly_devices.append({
-        "devicetype": getenv(f"D{device_number}_SHELLY_DEVICETYPE"),
+        "devicetype": getenv(f"D{device_number}_DEVICETYPE"),
         "host": host,
-        "port": getenv(f"D{device_number}_SHELLY_PORT"),
-        "username": getenv(f"D{device_number}_SHELLY_USERNAME", None), # Optional
-        "password": getenv(f"D{device_number}_SHELLY_PASSWORD", None) # Optional
+        "port": getenv(f"D{device_number}_PORT"),
+        "username": getenv(f"D{device_number}_USERNAME", None), # Optional
+        "password": getenv(f"D{device_number}_PASSWORD", None) # Optional
     })
     device_number += 1
-print(f"-> Found {len(shelly_devices)} Shelly devices.")
+print(f"-> Found {len(shelly_devices)} Shelly devices.\n")
 
 ### Create Prometheus metrics for each Shelly device
 def create_metrics(device_type, device_ip):
@@ -43,14 +41,14 @@ def create_metrics(device_type, device_ip):
     ### Create metrics according to the device type
     if device_type == "plugs":
         return {
-            "temperature": Gauge(f"shelly_temperature_{metric_name_ip}", "Temperature from Shelly plugs"),
-            "uptime": Gauge(f"shelly_uptime_{metric_name_ip}", "Uptime from Shelly plugs"),
-            "power": Gauge(f"shelly_power_consumption_{metric_name_ip}", "Shelly power consumption from Shelly plugs")
+            "temperature": Gauge(f"plugs_temperature_{metric_name_ip}", "Temperature from Shelly plugs"),
+            "uptime": Gauge(f"plugs_uptime_{metric_name_ip}", "Uptime from Shelly plugs"),
+            "power": Gauge(f"plugs_power_consumption_{metric_name_ip}", "Shelly power consumption from Shelly plugs")
         }
-    elif device_type == "3em":
+    elif device_type == "1":
         return {
-            "power": Gauge(f"shelly_power_consumption_{metric_name_ip}", "Shelly power consumption from Shelly 3EM"),
-            # Add more metrics specific to Shelly 3EM
+            "uptime": Gauge(f"shelly1_uptime_{metric_name_ip}", "Shelly Uptime from Shelly 1"),
+            # Spike when button is pressed?
         }
     ### TODO: Not needed since we check that in entrypoint.py?
     # else:
@@ -81,8 +79,8 @@ def metrics():
                     metrics["temperature"].set(shelly_data.get("temperature"))
                     metrics["uptime"].set(shelly_data.get("uptime"))
                     metrics["power"].set(shelly_data.get("meters")[0].get("power", None))
-                elif shelly_device['devicetype'] == "3em":
-                    metrics["power"].set(shelly_data.get("meters")[0].get("power", None))
+                elif shelly_device['devicetype'] == "1":
+                    metrics["uptime"].set(int(shelly_data.get("uptime")))
                     # Add more metrics specific to Shelly 3EM
                 ### TODO: Not needed since we check that in entrypoint.py?
                 # else:
