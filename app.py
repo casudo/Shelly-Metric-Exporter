@@ -32,6 +32,7 @@ while True:
     device_number += 1
 print(f"-> Found {len(shelly_devices)} Shelly devices.\n")
 
+
 ### Create Prometheus metrics for each Shelly device
 def create_metrics(device_type, device_ip):
     ### Replace dots with underscores in the IP address
@@ -43,7 +44,8 @@ def create_metrics(device_type, device_ip):
         return {
             "temperature": Gauge(f"shellyplugs_temperature_{metric_name_ip}", "Temperature from Shelly plugs"),
             "uptime": Gauge(f"shellyplugs_uptime_{metric_name_ip}", "Uptime from Shelly plugs"),
-            "power": Gauge(f"shellyplugs_power_consumption_{metric_name_ip}", "Shelly power consumption from Shelly plugs")
+            "power": Gauge(f"shellyplugs_power_consumption_{metric_name_ip}", "Shelly power consumption from Shelly plugs"),
+            "has_update": Gauge(f"shellyplugs_has_update_{metric_name_ip}", "Shelly has new firmware available")
         }
     elif device_type == "1":
         return {
@@ -58,6 +60,7 @@ def create_metrics(device_type, device_ip):
 ### Call the function to create Prometheus metrics for each Shelly device and store them in a list
 for device in shelly_devices:
     device["metrics"] = create_metrics(device["devicetype"], device["host"])
+
 
 ### API endpoint for Prometheus metrics
 @app.route("/metrics")
@@ -79,6 +82,7 @@ def metrics():
                     metrics["temperature"].set(shelly_data.get("temperature"))
                     metrics["uptime"].set(shelly_data.get("uptime"))
                     metrics["power"].set(shelly_data.get("meters")[0].get("power", None))
+                    metrics["has_update"].set(shelly_data.get("has_update"))
                 elif shelly_device['devicetype'] == "1":
                     metrics["uptime"].set(int(shelly_data.get("uptime")))
                     # Add more metrics specific to Shelly 3EM

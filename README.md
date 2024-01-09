@@ -105,6 +105,7 @@ services:
 - Add support for more metrics
 - Add support for more notification services
 - Add frontend for easier configuration
+- Instead of entering the device name, the script should check on the most standard API endpoints /status, /rpc/.. etc.
 
 ### License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
