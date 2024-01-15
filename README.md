@@ -106,6 +106,11 @@ services:
 - Add support for more notification services
 - Add frontend for easier configuration
 - Instead of entering the device name, the script should check on the most standard API endpoints /status, /rpc/.. etc.
+- **APIv2**:
+  - /rpc/Switch.GetStatus?id=0 gives us apower (Watts)
+  - Get Uptime
+  - Get Temperature
+  - Get Firmware version and Update available
 
 ### License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
