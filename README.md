@@ -28,8 +28,8 @@ Currently, all Gen 1 and Gen 2+ Shelly devices are supported. Keep in mind that 
 If your device is not fully supported, feel free to create an issue or contribute to the project.  
 
 > [!TIP]
-> You can see the API documentation for your device here:
-> [Gen 1](https://shelly-api-docs.shelly.cloud/gen1/)
+> You can see the API documentation for your device here:  
+> [Gen 1](https://shelly-api-docs.shelly.cloud/gen1/)  
 > [Gen 2+](https://shelly-api-docs.shelly.cloud/gen2/)
 
 # Installation
@@ -80,10 +80,10 @@ docker run -d \
   --name=smex \
   --restart=unless-stopped \
   -p <host_port>:<exposed_port>
-  -e D1_GEN=<device_type> \
+  -e D1_GEN=<device_generation> \
   -e D1_IP=<ip_address> \
   -e TZ=<your_timezone> \
-  <image_name>:<tag>
+  <image_name>:latest
 ```
 
 You can choose between two different image providers:
@@ -96,13 +96,13 @@ version: "3.8"
 
 services:
   smex:
-    image: <image_name>:<tag>
+    image: <image_name>:latest
     container_name: smex
     restart: unless-stopped
     ports:
       - <host_port>:<exposed_port>
     environment:
-        - D1_GEN=<device_type>
+        - D1_GEN=<device_generation>
         - D1_IP=<ip_address>
         - TZ=<your_timezone>
 ```
