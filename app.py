@@ -14,88 +14,97 @@ prom.REGISTRY.unregister(prom.PLATFORM_COLLECTOR)
 prom.REGISTRY.unregister(prom.GC_COLLECTOR)
 
 ### Create a list of all Shelly devices
-shelly_devices = []
+shelly_device_list = []
 device_number = 1
 while True:
-    host = getenv(f"D{device_number}_HOST")
-    ### Exit if no more devices (host) are found
-    if host is None:
+    ip = getenv(f"D{device_number}_IP")
+
+    ### Exit if no more devices (ip) are found
+    if ip is None:
         break
 
-    shelly_devices.append({
-        "devicetype": getenv(f"D{device_number}_DEVICETYPE"),
-        "host": host,
-        "port": getenv(f"D{device_number}_PORT", 80),
+    shelly_device_list.append({
+        "gen": getenv(f"D{device_number}_GEN"),
+        "ip": ip,
+        "port": getenv(f"D{device_number}_PORT", 80), # Optional
         "username": getenv(f"D{device_number}_USERNAME", None), # Optional
         "password": getenv(f"D{device_number}_PASSWORD", None) # Optional
     })
     device_number += 1
-print(f"-> Found {len(shelly_devices)} Shelly devices.\n")
+print(f"-> Found {len(shelly_device_list)} Shelly devices.\n")
 
 
 ### Create Prometheus metrics for each Shelly device
-def create_metrics(device_type, device_ip):
+def create_metrics(device_ip):
     ### Replace dots with underscores in the IP address
+    ### TODO: Might add a optional "D{n}_NAME" to set a custom name for the device
     ### Prometheus doesn't allow dots in metric names
     metric_name_ip = device_ip.replace(".", "_")
 
-    ### Create metrics according to the device type
-    if device_type == "plugs":
-        return {
-            "temperature": Gauge(f"shellyplugs_temperature_{metric_name_ip}", "Temperature from Shelly plugs"),
-            "uptime": Gauge(f"shellyplugs_uptime_{metric_name_ip}", "Uptime from Shelly plugs"),
-            "power": Gauge(f"shellyplugs_power_consumption_{metric_name_ip}", "Shelly power consumption from Shelly plugs"),
-            "has_update": Gauge(f"shellyplugs_has_update_{metric_name_ip}", "Shelly has new firmware available")
-        }
-    elif device_type == "1":
-        return {
-            "uptime": Gauge(f"shelly1_uptime_{metric_name_ip}", "Shelly Uptime from Shelly 1"),
-            # Spike when button is pressed?
-        }
-    ### TODO: Not needed since we check that in entrypoint.py?
-    # else:
-    #     print(f"Unknown device type: {device_type}")
-    #     return None
+    ### Create Prometheus metrics for Shelly device
+    return {
+        "temperature": Gauge(f"shelly_temperature_{metric_name_ip}", "Temperature from Shelly Device"),
+        "uptime": Gauge(f"shelly_uptime_{metric_name_ip}", "Uptime from Shelly Device"),
+        "power": Gauge(f"shelly_power_consumption_{metric_name_ip}", "Shelly power consumption from Shelly Device"),
+    }
 
 ### Call the function to create Prometheus metrics for each Shelly device and store them in a list
-for device in shelly_devices:
-    device["metrics"] = create_metrics(device["devicetype"], device["host"])
+for device in shelly_device_list:
+    device["metrics"] = create_metrics(device["ip"])
 
 
 ### API endpoint for Prometheus metrics
+### NOTE: This method will be called when accessing the /metrics endpoint!
 @app.route("/metrics")
 def metrics():
     ### Loop through all Shelly devices and fetch metrics
-    for shelly_device in shelly_devices:
-        url = f"http://{shelly_device['host']}:{shelly_device['port']}/status"
+    for shelly_device in shelly_device_list:
+        base_url = f"http://{shelly_device['ip']}:{shelly_device['port']}"
 
-        try:
-            ### Send HTTP GET request to Shelly device
-            response = requests.get(url, auth=HTTPBasicAuth(shelly_device['username'], shelly_device['password']))
+        ### Send a GET request to the Shelly device depending on the device type
+        if shelly_device["gen"] == "1":
+            api_endpoint = "status"
 
-            ### Check if the request was successful
-            if response.status_code == 200:
-                shelly_data = response.json()
-                metrics = shelly_device["metrics"]
+            try:
+                ### Send HTTP GET request to Shelly device
+                response = requests.get(f"{base_url}/{api_endpoint}", auth=HTTPBasicAuth(shelly_device['username'], shelly_device['password']))
 
-                if shelly_device['devicetype'] == "plugs":
+                ### Check if the request was successful
+                if response.status_code == 200:
+                    shelly_data = response.json()
+                    metrics = shelly_device["metrics"]
+
+                    ### Set Prometheus metrics
                     metrics["temperature"].set(shelly_data.get("temperature"))
                     metrics["uptime"].set(shelly_data.get("uptime"))
                     metrics["power"].set(shelly_data.get("meters")[0].get("power", None))
-                    metrics["has_update"].set(shelly_data.get("has_update"))
-                elif shelly_device['devicetype'] == "1":
-                    metrics["uptime"].set(int(shelly_data.get("uptime")))
-                    # Add more metrics specific to Shelly 3EM
-                ### TODO: Not needed since we check that in entrypoint.py?
-                # else:
-                #     print(f"Unknown device type: {shelly_device['devicetype']}")
-                #     continue
-            else:
-                print(f"Failed to fetch Shelly metrics for {shelly_device['host']}. Status code: {response.status_code}")
-                raise Exception(f"Failed to fetch Shelly metrics for {shelly_device['host']}. Status code: {response.status_code}")
-        except Exception as e:
-            print(f"An error occurred: {e}")
+                else:
+                    print(f"Failed to fetch Shelly metrics for {shelly_device['ip']}. Status code: {response.status_code}")
+                    raise Exception(f"Failed to fetch Shelly metrics for {shelly_device['ip']}. Status code: {response.status_code}")
+            except Exception as e:
+                print(f"An error occurred: {e}")
+        elif shelly_device["gen"] == "2":
+            api_endpoint = "rpc/Shelly.GetStatus"
 
+            try:
+                ### Send HTTP GET request to Shelly device
+                response = requests.get(f"{base_url}/{api_endpoint}", auth=HTTPBasicAuth(shelly_device['username'], shelly_device['password']))
+
+                ### Check if the request was successful
+                if response.status_code == 200:
+                    shelly_data = response.json()
+                    metrics = shelly_device["metrics"]
+
+                    ### Set Prometheus metrics
+                    metrics["temperature"].set(shelly_data.get("switch:0", {}).get("temperature", {}).get("tC"))
+                    metrics["uptime"].set(shelly_data.get("sys", {}).get("uptime"))
+                    metrics["power"].set(shelly_data.get("switch:0", {}).get("apower", None))
+                else:
+                    print(f"Failed to fetch Shelly metrics for {shelly_device['ip']}. Status code: {response.status_code}")
+                    raise Exception(f"Failed to fetch Shelly metrics for {shelly_device['ip']}. Status code: {response.status_code}")
+            except Exception as e:
+                print(f"An error occurred: {e}")
+    
     ### Return Prometheus metrics
     return generate_latest(REGISTRY)
 

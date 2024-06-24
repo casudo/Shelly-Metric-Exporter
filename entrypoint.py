@@ -4,7 +4,7 @@ from os import getenv
 ### ===============================================================================
 
 ### Get the environment variables
-D1_DEVICETYPE = getenv("D1_DEVICETYPE")
+D1_GEN = getenv("D1_GEN")
 D1_IP = getenv("D1_IP")
 D1_PORT = getenv("D1_PORT", 80)
 D1_USERNAME = getenv("D1_USERNAME", None)
@@ -25,7 +25,7 @@ else:
     print(f"  ✅ Using custom exporter port {EXPORTER_PORT}.")
     
 ### Required one device
-if D1_DEVICETYPE is None or D1_IP is None: 
+if D1_GEN is None or D1_IP is None: 
     print("  ❌ D1 information are not fully set. Exiting...")
     exit()
 else:
@@ -47,16 +47,16 @@ else:
 ### Check for additional optional devices starting from D2 and beyond
 device_number = 2
 while True:
-    devicetype = getenv(f"D{device_number}_DEVICETYPE")
+    gen = getenv(f"D{device_number}_GEN")
     ip = getenv(f"D{device_number}_IP")
     port = getenv(f"D{device_number}_PORT", 80)
     username = getenv(f"D{device_number}_USERNAME", None)
     password = getenv(f"D{device_number}_PASSWORD", None)
 
     ### TODO: Add check for device type (plugs, 3em, etc.)
-    if devicetype is None and ip is None:
+    if gen is None and ip is None:
         break
-    elif devicetype is None or ip is None:
+    elif gen is None or ip is None:
         print(f"  ❌ D{device_number} information are not fully set. Exiting...")
         exit()
     else:

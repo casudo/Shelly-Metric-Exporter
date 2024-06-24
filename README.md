@@ -7,14 +7,13 @@
   <!-- Placeholder for badges -->
   ![GitHub License](https://img.shields.io/github/license/casudo/Shelly-Metric-Exporter) ![GitHub release (with filter)](https://img.shields.io/github/v/release/casudo/Shelly-Metric-Exporter)
   ![Docker Pulls](https://img.shields.io/docker/pulls/casudo1/smex) ![Docker Stars](https://img.shields.io/docker/stars/casudo1/smex) ![Docker Image Size (tag)](https://img.shields.io/docker/image-size/casudo1/smex/latest)
-
-
 </div>
 
 > [!NOTE]
-This is a hobby project and still in development. It is not recommended to use it in production environments yet. Feel free to create issues and contribute.
+This is a hobby project and still in development.
 
 ##### Table of Contents
+- [Supported devices](#supported-devices)
 - [Installation](#installation)
 - [Docker](#docker)
   - [Environment variables](#environment-variables)
@@ -23,7 +22,17 @@ This is a hobby project and still in development. It is not recommended to use i
 - [Planned for the future](#planned-for-the-future)
 - [License](#license)
 
-## Installation
+# Supported devices
+Currently, all Gen 1 and Gen 2+ Shelly devices are supported. Keep in mind that not all devices have the metrics which are currently implemented and therefore might not work as expected! For example, not every device has a metric for the temperature.  
+
+If your device is not fully supported, feel free to create an issue or contribute to the project.  
+
+> [!TIP]
+> You can see the API documentation for your device here:
+> [Gen 1](https://shelly-api-docs.shelly.cloud/gen1/)
+> [Gen 2+](https://shelly-api-docs.shelly.cloud/gen2/)
+
+# Installation
 To make full use of the Shelly Metric Exporter, you need to have a Prometheus server running. If you don't have one yet, you can find a guide [here](https://prometheus.io/docs/prometheus/latest/getting_started/). Edit your `prometheus.yml` file and add the following lines to include the Shelly Metric Exporter (SMEX):
 ```yaml
 scrape_configs:
@@ -44,7 +53,7 @@ If you want to run this in a Docker container, you'll first need to set some man
 **Required:**
 | Variable |  Description |
 | --- | --- |
-| `D1_DEVICETYPE` | Supported devices types are: `plugs`, `plusplugs` |
+| `D1_GEN` | Supported generations are: `1`, `2` |
 | `D1_IP` | IP address of the Shelly device |
 
 **Optional:**
@@ -59,7 +68,7 @@ You can add as many devices as you want, just follow the above format like this:
 
 | Variable | Required | Description |
 | --- | --- | --- |
-| `D<n>_DEVICETYPE` | **Yes** | Supported devices types are: `plugs`, `plusplugs` |
+| `D<n>_GEN` | **Yes** | Supported generations are: `1`, `2` |
 | `D<n>_IP` | **Yes** | IP address of the Shelly device |
 | `D<n>_PORT` | No | Port of the Shelly device. If not set, defaults to `80`. |
 | `D<n>_USERNAME` | No | Username of the Shelly device if authentication is enabled. Defaults is `None`. |
@@ -71,7 +80,7 @@ docker run -d \
   --name=smex \
   --restart=unless-stopped \
   -p <host_port>:<exposed_port>
-  -e D1_DEVICETYPE=<device_type> \
+  -e D1_GEN=<device_type> \
   -e D1_IP=<ip_address> \
   -e TZ=<your_timezone> \
   <image_name>:<tag>
@@ -93,16 +102,16 @@ services:
     ports:
       - <host_port>:<exposed_port>
     environment:
-        - D1_DEVICETYPE=<device_type>
+        - D1_GEN=<device_type>
         - D1_IP=<ip_address>
         - TZ=<your_timezone>
 ```
 
 ## Plannend for the future
-- Add support for more devices
-- Add support for more metrics
+- Add support for metrics which are device-specific 
+- Add support for more metrics in general
 - Add support for notification services (such as Discord)
-- Add frontend for easier configuration
+- Add frontend for easier configuration instead of environment variables
 
 ### License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
