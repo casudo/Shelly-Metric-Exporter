@@ -112,6 +112,7 @@ services:
 - Add support for more metrics in general
 - Add support for notification services (such as Discord)
 - Add frontend for easier configuration instead of environment variables
+- Add tutorial for Grafana integration
 
 ### License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
