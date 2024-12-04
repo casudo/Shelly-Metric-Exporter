@@ -3,7 +3,7 @@ import prometheus_client as prom
 
 from flask import Flask, Response
 from prometheus_client import Gauge, generate_latest, REGISTRY
-from requests.auth import HTTPBasicAuth
+from requests.auth import HTTPBasicAuth, HTTPDigestAuth
 from os import getenv
 
 app = Flask(__name__)
@@ -65,11 +65,26 @@ def metrics():
 
         try:
             ### Fetch data from the Shelly device
-            response = requests.get(
-                f"{base_url}/{api_endpoint}",
-                auth=HTTPBasicAuth(shelly_device["username"], shelly_device["password"]),
-                timeout=5
-            )
+            if shelly_device["gen"] == "2" and shelly_device["password"]:
+                ### Initial request to get the WWW-Authenticate header
+                initial_response = requests.get(f"{base_url}/{api_endpoint}", timeout=5)
+                if initial_response.status_code == 401:
+                    ### Extract realm, nonce, and algorithm from WWW-Authenticate header
+                    auth_header = initial_response.headers.get("WWW-Authenticate")
+                    if auth_header:
+                        auth = HTTPDigestAuth("admin", shelly_device["password"])
+                        response = requests.get(f"{base_url}/{api_endpoint}", auth=auth, timeout=5)
+                    else:
+                        print(f"Failed to get WWW-Authenticate header from {shelly_device['ip']}.")
+                        continue
+                else:
+                    response = initial_response
+            else:
+                response = requests.get(
+                    f"{base_url}/{api_endpoint}",
+                    auth=HTTPBasicAuth(shelly_device["username"], shelly_device["password"]),
+                    timeout=5
+                )
             response.raise_for_status()
             shelly_data = response.json()
 

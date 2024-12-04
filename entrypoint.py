@@ -36,13 +36,20 @@ if D1_PORT == 80:
 else:
     print(f"  ✅ D1 using custom port {D1_PORT}.")
 ### Check for optional D1 device username and password
-if D1_USERNAME is not None and D1_PASSWORD is not None:
-    print("  ✅ D1 credentials are set.")
-elif (D1_USERNAME is None) != (D1_PASSWORD is None):
-    print("  ❌ D1 credentials are incomplete. Both username and password must be set. Exiting...")
-    exit()
-else:
-    print("  ⚠️ D1 doesn't require credentials.")
+if D1_GEN == "1":
+    if D1_USERNAME is not None and D1_PASSWORD is not None:
+        print("  ✅ D1 credentials are set.")
+    elif (D1_USERNAME is None) != (D1_PASSWORD is None):
+        print("  ❌ D1 credentials are incomplete. Both username and password must be set. Exiting...")
+        exit()
+    else:
+        print("  ⚠️ D1 doesn't require credentials.")
+elif D1_GEN == "2":
+    if D1_PASSWORD is not None:
+        print("  ✅ D1 password is set.")
+    else:
+        print("  ❌ D1 password is required for Gen 2 devices. Exiting...")
+        exit()
 
 ### Check for additional optional devices starting from D2 and beyond
 device_number = 2
@@ -67,13 +74,20 @@ while True:
     else:
         print(f"  ✅ D{device_number} using custom port {port}.")
     ### Check for optional D{n} device username and password
-    if username is not None and password is not None:
-        print(f"  ✅ D{device_number} credentials are set.")
-    elif (username is None) != (password is None):
-        print(f"  ❌ D{device_number} credentials are incomplete. Both username and password must be set. Exiting...")
-        exit()
-    else:
-        print(f"  ⚠️ D{device_number} doesn't require credentials.")
+    if gen == "1":
+        if username is not None and password is not None:
+            print(f"  ✅ D{device_number} credentials are set.")
+        elif (username is None) != (password is None):
+            print(f"  ❌ D{device_number} credentials are incomplete. Both username and password must be set. Exiting...")
+            exit()
+        else:
+            print(f"  ⚠️ D{device_number} doesn't require credentials.")
+    elif gen == "2":
+        if password is not None:
+            print(f"  ✅ D{device_number} password is set.")
+        else:
+            print(f"  ❌ D{device_number} password is required for Gen 2 devices. Exiting...")
+            exit()
 
     device_number += 1
 
