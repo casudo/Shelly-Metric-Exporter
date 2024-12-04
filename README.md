@@ -61,7 +61,7 @@ If you want to run this in a Docker container, you'll first need to set some man
 | --- | --- |
 | `EXPORTER_PORT` | The port the exporter should listen on. If not set, defaults to `5000`. |
 | `D1_PORT` | Port of the Shelly device. If not set, defaults to `80`. |
-| `D1_USERNAME` | Username of the Shelly device if authentication is enabled. Defaults is `None`. |
+| `D1_USERNAME` | Username of the Shelly device if authentication is enabled AND device is generation 1. Defaults is `None`. |
 | `D1_PASSWORD` | Password of the Shelly device if authentication is enabled. Defaults is `None`. |
 
 You can add as many devices as you want, just follow the above format like this:  
@@ -71,7 +71,7 @@ You can add as many devices as you want, just follow the above format like this:
 | `D<n>_GEN` | **Yes** | Supported generations are: `1`, `2` |
 | `D<n>_IP` | **Yes** | IP address of the Shelly device |
 | `D<n>_PORT` | No | Port of the Shelly device. If not set, defaults to `80`. |
-| `D<n>_USERNAME` | No | Username of the Shelly device if authentication is enabled. Defaults is `None`. |
+| `D<n>_USERNAME` | No | Username of the Shelly device if authentication is enabled AND device is generation 1. Defaults is `None`. |
 | `D<n>_PASSWORD` | No | Password of the Shelly device if authentication is enabled. Defaults is `None`. |
 
 ## docker run
