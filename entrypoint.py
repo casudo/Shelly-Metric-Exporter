@@ -48,8 +48,7 @@ elif D1_GEN == "2":
     if D1_PASSWORD is not None:
         print("  ✅ D1 password is set.")
     else:
-        print("  ❌ D1 password is required for Gen 2 devices. Exiting...")
-        exit()
+        print("  ⚠️ Warning: D1 password is not set. This is insecure.")
 
 ### Check for additional optional devices starting from D2 and beyond
 device_number = 2
@@ -86,8 +85,7 @@ while True:
         if password is not None:
             print(f"  ✅ D{device_number} password is set.")
         else:
-            print(f"  ❌ D{device_number} password is required for Gen 2 devices. Exiting...")
-            exit()
+            print(f"  ⚠️ Warning: D{device_number} password is not set. This is insecure.")
 
     device_number += 1
 

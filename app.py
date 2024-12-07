@@ -41,6 +41,7 @@ def create_metrics():
         "temperature": Gauge("shelly_temperature", "Temperature from Shelly Device", ["instance"]),
         "uptime": Gauge("shelly_uptime", "Uptime from Shelly Device", ["instance"]),
         "power": Gauge("shelly_power_consumption", "Shelly power consumption from Shelly Device", ["instance"]),
+        "has_update": Gauge("shelly_has_update", "Shelly has new firmware available", ["instance"])
     }
 
 ### Call the function to create Prometheus metrics for all devices
@@ -65,20 +66,23 @@ def metrics():
 
         try:
             ### Fetch data from the Shelly device
-            if shelly_device["gen"] == "2" and shelly_device["password"]:
-                ### Initial request to get the WWW-Authenticate header
-                initial_response = requests.get(f"{base_url}/{api_endpoint}", timeout=5)
-                if initial_response.status_code == 401:
-                    ### Extract realm, nonce, and algorithm from WWW-Authenticate header
-                    auth_header = initial_response.headers.get("WWW-Authenticate")
-                    if auth_header:
-                        auth = HTTPDigestAuth("admin", shelly_device["password"])
-                        response = requests.get(f"{base_url}/{api_endpoint}", auth=auth, timeout=5)
+            if shelly_device["gen"] == "2":
+                if shelly_device["password"]:
+                    ### Initial request to get the WWW-Authenticate header
+                    initial_response = requests.get(f"{base_url}/{api_endpoint}", timeout=5)
+                    if initial_response.status_code == 401:
+                        ### Extract realm, nonce, and algorithm from WWW-Authenticate header
+                        auth_header = initial_response.headers.get("WWW-Authenticate")
+                        if auth_header:
+                            auth = HTTPDigestAuth("admin", shelly_device["password"])
+                            response = requests.get(f"{base_url}/{api_endpoint}", auth=auth, timeout=5)
+                        else:
+                            print(f"Failed to get WWW-Authenticate header from {shelly_device['ip']}.")
+                            continue
                     else:
-                        print(f"Failed to get WWW-Authenticate header from {shelly_device['ip']}.")
-                        continue
+                        response = initial_response
                 else:
-                    response = initial_response
+                    response = requests.get(f"{base_url}/{api_endpoint}", timeout=5)
             else:
                 response = requests.get(
                     f"{base_url}/{api_endpoint}",
