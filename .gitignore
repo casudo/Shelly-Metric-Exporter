@@ -4,3 +4,4 @@ __pycache__
 
 ### Debug related
 .env
+docker-compose.yaml
