@@ -7,6 +7,7 @@ from os import getenv
 D1_GEN = getenv("D1_GEN")
 D1_IP = getenv("D1_IP")
 D1_PORT = getenv("D1_PORT", 80)
+D1_NAME = getenv("D1_NAME", D1_IP) # Defaults to IP if not set (maybe replace . with - or _)
 D1_USERNAME = getenv("D1_USERNAME", None)
 D1_PASSWORD = getenv("D1_PASSWORD", None)
 
@@ -35,6 +36,11 @@ if D1_PORT == 80:
     print("  ✅ D1 using default port 80.")
 else:
     print(f"  ✅ D1 using custom port {D1_PORT}.")
+### Check for optional D1 device name
+if D1_NAME is not None:
+    print(f"  ✅ D1 using custom name {D1_NAME}.")
+else:
+    print("  ✅ D1 using default name (IP address).")
 ### Check for optional D1 device username and password
 if D1_GEN == "1":
     if D1_USERNAME is not None and D1_PASSWORD is not None:
@@ -56,6 +62,7 @@ while True:
     gen = getenv(f"D{device_number}_GEN")
     ip = getenv(f"D{device_number}_IP")
     port = getenv(f"D{device_number}_PORT", 80)
+    name = getenv(f"D{device_number}_NAME", ip)
     username = getenv(f"D{device_number}_USERNAME", None)
     password = getenv(f"D{device_number}_PASSWORD", None)
 
@@ -72,6 +79,11 @@ while True:
         print(f"  ✅ D{device_number} using default port 80.")
     else:
         print(f"  ✅ D{device_number} using custom port {port}.")
+    ### Check for optional D{n} device name
+    if name is not None:
+        print(f"  ✅ D{device_number} using custom name {name}.")
+    else:
+        print(f"  ✅ D{device_number} using default name (IP address).")
     ### Check for optional D{n} device username and password
     if gen == "1":
         if username is not None and password is not None:

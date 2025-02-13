@@ -27,6 +27,7 @@ while True:
         "gen": getenv(f"D{device_number}_GEN"),
         "ip": ip,
         "port": getenv(f"D{device_number}_PORT", 80), # Optional
+        "name": getenv(f"D{device_number}_NAME", ip), # Optional
         "username": getenv(f"D{device_number}_USERNAME", None), # Optional
         "password": getenv(f"D{device_number}_PASSWORD", None) # Optional
     })
@@ -103,11 +104,17 @@ def metrics():
                 power = shelly_data.get("switch:0", {}).get("apower", 0)
 
             ### Update Prometheus metrics with labels
-            global_metrics["temperature"].labels(instance=shelly_device["ip"]).set(float(temperature))
-            global_metrics["uptime"].labels(instance=shelly_device["ip"]).set(float(uptime))
-            global_metrics["power"].labels(instance=shelly_device["ip"]).set(float(power))
+            global_metrics["temperature"].labels(instance=shelly_device["name"]).set(float(temperature))
+            global_metrics["uptime"].labels(instance=shelly_device["name"]).set(float(uptime))
+            global_metrics["power"].labels(instance=shelly_device["name"]).set(float(power))
         except requests.exceptions.RequestException as e:
             print(f"Error fetching metrics from {shelly_device['ip']}: {e}")
+            continue
+        except requests.exceptions.HTTPError as e:
+            print(f"HTTP error fetching metrics from IP {shelly_device['ip']}: {e}")
+            continue
+        except Exception as e:
+            print(f"Unknown error appeared while fetching IP {shelly_device['ip']}: {e}")
             continue
 
     ### Return Prometheus metrics

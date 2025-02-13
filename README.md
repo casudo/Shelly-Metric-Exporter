@@ -60,6 +60,7 @@ If you want to run this in a Docker container, you'll first need to set some man
 | Variable |  Description |
 | --- | --- |
 | `EXPORTER_PORT` | The port the exporter should listen on. If not set, defaults to `5000`. |
+| `D1_NAME` | Name of the Shelly device. If not set, defaults to the IP set in `D1_IP`. |
 | `D1_PORT` | Port of the Shelly device. If not set, defaults to `80`. |
 | `D1_USERNAME` | Username of the Shelly device if authentication is enabled AND device is generation 1. Defaults is `None`. |
 | `D1_PASSWORD` | Password of the Shelly device if authentication is enabled. Defaults is `None`. |
@@ -71,6 +72,7 @@ You can add as many devices as you want, just follow the above format like this:
 | `D<n>_GEN` | **Yes** | Supported generations are: `1`, `2` |
 | `D<n>_IP` | **Yes** | IP address of the Shelly device |
 | `D<n>_PORT` | No | Port of the Shelly device. If not set, defaults to `80`. |
+| `D<n>_NAME` | No | Name of the Shelly device. If not set, defaults to the IP set in `D<n>_IP`. |
 | `D<n>_USERNAME` | No | Username of the Shelly device if authentication is enabled AND device is generation 1. Defaults is `None`. |
 | `D<n>_PASSWORD` | No | Password of the Shelly device if authentication is enabled. Defaults is `None`. |
 
@@ -86,10 +88,6 @@ docker run -d \
   <image_name>:latest
 ```
 
-You can choose between two different image providers:
-- Docker Hub: [casudo1/smex](https://hub.docker.com/r/casudo1/smex)
-- GitHub: [ghcr.io/casudo/smex](https://github.com/casudo/Shelly-Metric-Exporter/pkgs/container/smex)
-
 ## Docker Compose
 ```yaml
 version: "3.8"
@@ -102,9 +100,9 @@ services:
     ports:
       - <host_port>:<exposed_port>
     environment:
-        - D1_GEN=<device_generation>
-        - D1_IP=<ip_address>
-        - TZ=<your_timezone>
+      - D1_GEN=<device_generation>
+      - D1_IP=<ip_address>
+      - TZ=<your_timezone>
 ```
 
 ## Plannend for the future
